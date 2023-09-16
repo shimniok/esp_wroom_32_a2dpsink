@@ -1,0 +1,26 @@
+I (24909) BT_AV: A2DP connection state: Connecting, [88:54:1f:41:c4:ce]
+I (24999) BT_AV: A2DP audio stream configuration, codec type: 0
+I (24999) BT_AV: Configure audio player: 21-15-2-35
+I (24999) BT_AV: Audio player configured, sample rate: 44100
+I (25009) BT_AV: protocol service capabilities configured: 0x1 
+I (25009) BT_AV: Peer device support delay reporting
+W (25139) BT_APPL: new conn_srvc id:19, app_id:0
+W (25139) BT_APPL: bta_dm_pm_ssr conn_srvc id:19, app_id:0
+W (25139) BT_APPL: bta_dm_pm_ssr:2, lat:1200
+I (25149) BT_AV: A2DP connection state: Connected, [88:54:1f:41:c4:ce]
+I (25159) BT_APP_CORE: ringbuffer data empty! mode changed: RINGBUFFER_MODE_PREFETCHING
+I (25369) RC_CT: AVRC conn_state event: state 1, [88:54:1f:41:c4:ce]
+I (25369) >>>>: Attempting to set rn event capability
+I (25379) RC_TG: AVRC conn_state evt: state 1, [88:54:1f:41:c4:ce]
+I (25379) RC_CT: AVRC remote features 25b, TG features 1c1
+I (25419) RC_CT: remote rn_cap: count 7, bitmask 0x1e26
+I (25559) RC_CT: AVRC metadata rsp: attribute id 0x1, Colour Me (ASOT 1069)
+I (25559) RC_CT: AVRC metadata rsp: attribute id 0x2, Giuseppe Ottaviani, Jan Burton
+I (25559) RC_CT: AVRC metadata rsp: attribute id 0x4, ASOT 1069 - A State Of Trance Episode 1069
+I (25589) RC_TG: >>>> AVRC register event notification: 13, param: 0x0
+I (25659) RC_TG: AVRC set absolute volume: 16%
+I (25659) RC_TG: Volume is set by remote controller to: 16% (21)
+W (28349) BT_HCI: hci cmd send: sniff: hdl 0x80, intv(400 800)
+W (28449) BT_HCI: hcif mode change: hdl 0x80, mode 2, intv 800, status 0x0
+I (28459) BT_AV: ESP_BT_GAP_MODE_CHG_EVT mode: 2
+W (29599) BT_HCI: hcif ssr evt: st 0x0, hdl 0x80, tx_lat 800 rx_lat 800
