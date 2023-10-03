@@ -31,8 +31,6 @@ static TaskHandle_t s_autoconnect_th = NULL;
 ////////////////////////////////////
 static void bt_autoconnect_task(void *arg) {
   while (1) {
-    //    if (callback) callback();
-
     ESP_LOGI("BT_AUTOCONN",
              "attempting to connect to paired device "
              "[%02x:%02x:%02x:%02x:%02x:%02x]... ",
