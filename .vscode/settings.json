@@ -12,6 +12,9 @@
   "files.associations": {
     "bt_app_core.h": "c",
     "bt_app_av.h": "c",
-    "ringbuf.h": "c"
+    "ringbuf.h": "c",
+    "task.h": "c",
+    "semphr.h": "c",
+    "xtensa_api.h": "c"
   }
 }

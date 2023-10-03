@@ -17,15 +17,6 @@
 /* signal for `bt_app_work_dispatch` */
 #define BT_APP_SIG_WORK_DISPATCH (0x01)
 
-#define UI_STATUS_COUNT 4
-#define UI_STATUS_NOT_CONNECTED 0
-#define UI_STATUS_CONNECTING 1
-#define UI_STATUS_CONNECTED 2
-#define UI_STATUS_PLAYING UI_STATUS_CONNECTED
-#define UI_STATUS_PAUSED 3
-
-typedef uint8_t ui_status_t;
-
 /**
  * @brief  handler for the dispatched work
  *
@@ -94,25 +85,5 @@ void bt_i2s_task_shut_down(void);
  * @return size if writteen ringbuffer successfully, 0 others
  */
 size_t write_ringbuf(const uint8_t *data, size_t size);
-
-/**
- * @brief  update ui status task with new status
- */
-void ui_update_status(ui_status_t status);
-
-/**
- * @brief  start up the status diplay task
- */
-void ui_status_task_startup(void);
-
-/**
- * @brief  start up the auto connect task
- */
-void bt_autoconnect_task_startup(void (*cb)(void));
-
-/**
- * @brief  shut down the auto connect task
- */
-void bt_autoconnect_task_shutdown(void);
 
 #endif /* __BT_APP_CORE_H__ */

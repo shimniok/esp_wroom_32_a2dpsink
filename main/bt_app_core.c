@@ -22,7 +22,6 @@
 #else
 #include "driver/i2s_std.h"
 #endif
-#include "driver/gpio.h"
 #include "freertos/ringbuf.h"
 
 #define RINGBUF_HIGHEST_WATER_LEVEL (32 * 1024)
@@ -49,12 +48,6 @@ static void bt_i2s_task_handler(void *arg);
 static bool bt_app_send_msg(bt_app_msg_t *msg);
 /* handle dispatched messages */
 static void bt_app_work_dispatched(bt_app_msg_t *msg);
-/* led status task */
-static void ui_status_task(void *arg);
-/* start up status task */
-void status_task_startup(void);
-/* bluetooth autoconnect task */
-static void bt_autoconnect_task(void *arg);
 
 /*******************************
  * STATIC VARIABLE DEFINITIONS
@@ -64,8 +57,6 @@ static QueueHandle_t s_bt_app_task_queue = NULL; /* handle of work queue */
 static TaskHandle_t s_bt_app_task_handle =
     NULL; /* handle of application task  */
 static TaskHandle_t s_bt_i2s_task_handle = NULL; /* handle of I2S task */
-static TaskHandle_t s_autoconnect_th = NULL; /* task for automatic reconnect */
-static TaskHandle_t s_status_th = NULL;      /* task handle for status task */
 static RingbufHandle_t s_ringbuf_i2s = NULL; /* handle of ringbuffer for I2S */
 static SemaphoreHandle_t s_i2s_write_semaphore = NULL;
 static uint16_t ringbuffer_mode = RINGBUFFER_MODE_PROCESSING;
@@ -291,76 +282,4 @@ size_t write_ringbuf(const uint8_t *data, size_t size) {
   }
 
   return done ? size : 0;
-}
-
-////////////////////////////////////
-//
-// UI Status indicator Task
-//
-////////////////////////////////////
-QueueHandle_t ui_queue;
-const TickType_t dtime = 100 / portTICK_PERIOD_MS;
-
-static void ui_status_task(void *arg) {
-  uint8_t blink_pattern[UI_STATUS_COUNT][10] = {
-      {1, 1, 1, 0, 0, 0, 0, 0, 0, 0},  // not connected
-      {1, 1, 0, 0, 0, 1, 1, 0, 0, 0},  // connecting
-      {1, 1, 1, 1, 1, 1, 1, 1, 1, 1},  // connected
-      {1, 1, 1, 1, 1, 1, 1, 1, 0, 0}   // paused
-  };
-  ui_status_t msg;
-  uint8_t status = 0;
-
-  gpio_set_direction(GPIO_NUM_33, GPIO_MODE_OUTPUT);
-  gpio_set_drive_capability(GPIO_NUM_33, GPIO_DRIVE_CAP_3);
-  gpio_set_level(GPIO_NUM_33, 1);
-
-  uint16_t t = 0;
-  while (1) {
-    if (pdTRUE == xQueueReceive(ui_queue, &msg, dtime)) {
-      if (msg < UI_STATUS_COUNT) {
-        status = msg;
-      }
-    }
-    gpio_set_level(GPIO_NUM_33, blink_pattern[status][t]);
-    t++;
-    if (t >= 10) t = 0;
-  }
-}
-
-void ui_update_status(ui_status_t status) {
-  xQueueSend(ui_queue, &status, dtime);
-}
-
-void ui_status_task_startup(void) {
-  ui_queue = xQueueCreate(10, sizeof(ui_status_t));
-  xTaskCreate(ui_status_task, "uistatus", 2048, NULL, 3, &s_status_th);
-}
-
-////////////////////////////////////
-//
-// Auto Connect Task
-//
-////////////////////////////////////
-
-void (*callback)() = NULL;
-
-static void bt_autoconnect_task(void *arg) {
-  while (1) {
-    if (callback) callback();
-    vTaskDelay(10000UL / portTICK_PERIOD_MS);
-  }
-}
-
-void bt_autoconnect_task_startup(void (*cb)(void)) {
-  callback = cb;
-  xTaskCreate(bt_autoconnect_task, "BtAutoconn", 2048, NULL, 3,
-              &s_autoconnect_th);
-}
-
-void bt_autoconnect_task_shutdown(void) {
-  if (s_autoconnect_th) {
-    vTaskDelete(s_autoconnect_th);
-    s_autoconnect_th = NULL;
-  }
 }

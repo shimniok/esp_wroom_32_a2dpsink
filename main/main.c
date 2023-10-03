@@ -24,6 +24,7 @@
 #include "freertos/task.h"
 #include "nvs.h"
 #include "nvs_flash.h"
+#include "ui_display.h"
 
 /* device name */
 #define LOCAL_DEVICE_NAME "ESP_SPEAKER"
