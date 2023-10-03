@@ -3,3 +3,7 @@ build/
 bt_config.cfg
 *.log
 *.old
+*.csv
+*.png
+*.m
+LogPotentiometer.ods
