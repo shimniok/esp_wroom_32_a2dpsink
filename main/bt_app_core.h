@@ -7,15 +7,24 @@
 #ifndef __BT_APP_CORE_H__
 #define __BT_APP_CORE_H__
 
-#include <stdint.h>
 #include <stdbool.h>
+#include <stdint.h>
 #include <stdio.h>
 
 /* log tag */
-#define BT_APP_CORE_TAG    "BT_APP_CORE"
+#define BT_APP_CORE_TAG "BT_APP_CORE"
 
 /* signal for `bt_app_work_dispatch` */
-#define BT_APP_SIG_WORK_DISPATCH    (0x01)
+#define BT_APP_SIG_WORK_DISPATCH (0x01)
+
+#define UI_STATUS_COUNT 4
+#define UI_STATUS_NOT_CONNECTED 0
+#define UI_STATUS_CONNECTING 1
+#define UI_STATUS_CONNECTED 2
+#define UI_STATUS_PLAYING UI_STATUS_CONNECTED
+#define UI_STATUS_PAUSED 3
+
+typedef uint8_t ui_status_t;
 
 /**
  * @brief  handler for the dispatched work
@@ -23,14 +32,14 @@
  * @param [in] event  event id
  * @param [in] param  handler parameter
  */
-typedef void (* bt_app_cb_t) (uint16_t event, void *param);
+typedef void (*bt_app_cb_t)(uint16_t event, void *param);
 
 /* message to be sent */
 typedef struct {
-    uint16_t       sig;      /*!< signal to bt_app_task */
-    uint16_t       event;    /*!< message event id */
-    bt_app_cb_t    cb;       /*!< context switch callback */
-    void           *param;   /*!< parameter area needs to be last */
+  uint16_t sig;   /*!< signal to bt_app_task */
+  uint16_t event; /*!< message event id */
+  bt_app_cb_t cb; /*!< context switch callback */
+  void *param;    /*!< parameter area needs to be last */
 } bt_app_msg_t;
 
 /**
@@ -40,7 +49,7 @@ typedef struct {
  * @param [in]  p_src   pointer to source data
  * @param [in]  len     data length in byte
  */
-typedef void (* bt_app_copy_cb_t) (void *p_dest, void *p_src, int len);
+typedef void (*bt_app_copy_cb_t)(void *p_dest, void *p_src, int len);
 
 /**
  * @brief  work dispatcher for the application task
@@ -53,7 +62,8 @@ typedef void (* bt_app_copy_cb_t) (void *p_dest, void *p_src, int len);
  *
  * @return  true if work dispatch successfully, false otherwise
  */
-bool bt_app_work_dispatch(bt_app_cb_t p_cback, uint16_t event, void *p_params, int param_len, bt_app_copy_cb_t p_copy_cback);
+bool bt_app_work_dispatch(bt_app_cb_t p_cback, uint16_t event, void *p_params,
+                          int param_len, bt_app_copy_cb_t p_copy_cback);
 
 /**
  * @brief  start up the application task
@@ -84,5 +94,25 @@ void bt_i2s_task_shut_down(void);
  * @return size if writteen ringbuffer successfully, 0 others
  */
 size_t write_ringbuf(const uint8_t *data, size_t size);
+
+/**
+ * @brief  update ui status task with new status
+ */
+void ui_update_status(ui_status_t status);
+
+/**
+ * @brief  start up the status diplay task
+ */
+void ui_status_task_startup(void);
+
+/**
+ * @brief  start up the auto connect task
+ */
+void bt_autoconnect_task_startup(void (*cb)(void));
+
+/**
+ * @brief  shut down the auto connect task
+ */
+void bt_autoconnect_task_shutdown(void);
 
 #endif /* __BT_APP_CORE_H__ */
