@@ -119,16 +119,6 @@ dac_continuous_handle_t tx_chan;
  * STATIC FUNCTION DEFINITIONS
  *******************************/
 
-// convert linear 0-100 volume to logarithmic
-// static uint8_t vol_to_log(uint8_t volume)
-// {
-//     if (volume < 80) {
-//         return volume / 4;
-//     } else {
-//         return 100;
-//     }
-// }
-
 static void bt_app_alloc_meta_buffer(esp_avrc_ct_cb_param_t *param) {
   esp_avrc_ct_cb_param_t *rc = (esp_avrc_ct_cb_param_t *)(param);
   uint8_t *attr_text = (uint8_t *)malloc(rc->meta_rsp.attr_length + 1);
