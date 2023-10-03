@@ -7,5 +7,11 @@
   ],
   "idf.port": "/dev/ttyUSB0",
   "idf.espIdfPath": "/home/mes/esp/esp-idf",
-  "idf.toolsPath": "/home/mes/.espressif/"
+  "idf.toolsPath": "/home/mes/.espressif/",
+  "editor.formatOnPaste": true,
+  "files.associations": {
+    "bt_app_core.h": "c",
+    "bt_app_av.h": "c",
+    "ringbuf.h": "c"
+  }
 }
