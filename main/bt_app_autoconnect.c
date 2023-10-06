@@ -19,7 +19,7 @@
 ////////////////////////////////////
 
 /* bda for target of autoconnect */
-static uint8_t bda[6];
+static uint8_t mybda[6];
 
 /* task handle for auto connect */
 static TaskHandle_t s_autoconnect_th = NULL;
@@ -34,15 +34,20 @@ static void bt_autoconnect_task(void *arg) {
     ESP_LOGI("BT_AUTOCONN",
              "attempting to connect to paired device "
              "[%02x:%02x:%02x:%02x:%02x:%02x]... ",
-             bda[0], bda[1], bda[2], bda[3], bda[4], bda[5]);
+             mybda[0], mybda[1], mybda[2], mybda[3], mybda[4], mybda[5]);
 
-    esp_a2d_sink_connect(bda);
+    esp_a2d_sink_connect(mybda);
 
-    vTaskDelay(10000UL / portTICK_PERIOD_MS);
+    vTaskDelay(10000UL / portTICK_PERIOD_MS);  // TODO: should this be one-shot?
   }
 }
 
 void bt_autoconnect_task_startup(uint8_t *bda) {
+  if (bda) {
+    for (int i = 0; i < 6; i++) {
+      mybda[i] = bda[i];
+    }
+  }
   xTaskCreate(bt_autoconnect_task, "BtAutoconn", 2048, NULL, 3,
               &s_autoconnect_th);
 }
