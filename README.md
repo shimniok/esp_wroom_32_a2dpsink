@@ -1,22 +1,23 @@
-| Supported Targets | ESP32 |
-| ----------------- | ----- |
+# Bluetooth Player for ESP-WROOM-32
+# =================================
 
-A2DP-SINK EXAMPLE
-======================
+Based on ESP-IDF A2DP-SINK example.
 
-Example of A2DP audio sink role
-
-This is the example of API implementing Advanced Audio Distribution Profile to receive an audio stream.
-
-This example involves the use of Bluetooth legacy profile A2DP for audio stream reception, AVRCP for media information notifications, and I2S for audio stream output interface.
+Implements Bluetooth legacy profile A2DP for audio stream reception, AVRCP for media information notifications, and I2S for audio stream output interface.
 
 Applications such as bluetooth speakers can take advantage of this example as a reference of basic functionalities.
 
-## How to use this example
+After pairing, the application saves the address of the A2DP Source and will attempt to connect to it automatically after any subsequent powerup or reboot.
+
+## How to use
 
 ### Hardware Required
 
-To play the sound, there is a need of loudspeaker and possibly an external I2S codec. Otherwise the example will only show a count of audio data packets received silently. Internal DAC can be selected and in this case external I2S codec may not be needed.
+A2DP is supported by the ESP32-WROOM-32 modules which have ESP32 chips. Modules with ESP32S2 or ESP32S3 chips don't support legacy A2DP.
+
+To play sound, you'll need a stereo DAC, a stereo audio amplifier, and two speakers. The application can be configured to use an internal 8-bit DAC for testing, but of course that will sound pretty terrible for regular use. 
+
+Without audio hardware, the app will only show a count of audio data packets received silently.
 
 For the I2S codec, pick whatever chip or board works for you; this code was written using a PCM5102 chip, but other I2S boards and chips will probably work as well. The default I2S connections are shown below, but these can be changed in menuconfig:
 
@@ -27,6 +28,8 @@ For the I2S codec, pick whatever chip or board works for you; this code was writ
 | GPIO26    | BCK          |
 
 If the internal DAC is selected, analog audio will be available on GPIO25 and GPIO26. The output resolution on these pins will always be limited to 8 bit because of the internal structure of the DACs.
+
+Connect an LED anode to GPIO33 through a suitable resistor to ground to act as a bluetooth status indicator. It blinks in different patterns to indicate connected, unconnected, connecting, and paused status.
 
 ### Configure the project
 
