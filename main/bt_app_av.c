@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "bt_app_autoconnect.h"
+// #include "bt_app_autoconnect.h"
 #include "bt_app_core.h"
 #include "esp_a2dp_api.h"
 #include "esp_avrc_api.h"
@@ -79,8 +79,6 @@ static void bt_av_hdl_a2d_evt(uint16_t event, void *p_param);
 static void bt_av_hdl_avrc_ct_evt(uint16_t event, void *p_param);
 /* avrc target event handler */
 static void bt_av_hdl_avrc_tg_evt(uint16_t event, void *p_param);
-/* autoconnect callback */
-void bt_connect_cb(void);
 /* compare two bdas for equality */
 bool bda_equal(uint8_t *bda1, uint8_t *bda2);
 /* read bda from nvs */
@@ -325,7 +323,7 @@ static void bt_av_hdl_a2d_evt(uint16_t event, void *p_param) {
         esp_bt_gap_set_scan_mode(ESP_BT_NON_CONNECTABLE,
                                  ESP_BT_NON_DISCOVERABLE);
         bt_i2s_task_start_up();
-        bt_autoconnect_task_shutdown();
+        // bt_autoconnect_task_shutdown();
         nvs_update_bda(bda);
       } else if (a2d->conn_stat.state == ESP_A2D_CONNECTION_STATE_CONNECTING) {
         ui_update_status(UI_STATUS_CONNECTING);
@@ -409,7 +407,8 @@ static void bt_av_hdl_a2d_evt(uint16_t event, void *p_param) {
         ESP_LOGI(BT_AV_TAG, "A2DP PROF STATE: Init Complete");
         uint8_t bda[6];
         if (nvs_read_bda(bda)) {
-          bt_autoconnect_task_startup(bda);
+          esp_a2d_sink_connect(bda);
+          // bt_autoconnect_task_startup(bda);
         }
       } else {
         ESP_LOGI(BT_AV_TAG, "A2DP PROF STATE: Deinit Complete");
@@ -749,20 +748,6 @@ void bt_app_rc_tg_cb(esp_avrc_tg_cb_event_t event,
       ESP_LOGE(BT_RC_TG_TAG, "Invalid AVRC event: %d", event);
       break;
   }
-}
-
-// Callback to automatically connect to previously paired device
-void bt_connect_cb(void) {
-  // uint8_t bda[6];
-
-  // if (nvs_read_bda(bda)) {
-  //   ESP_LOGI(BT_APP_CORE_TAG,
-  //            "attempting to connect to paired device "
-  //            "[%02x:%02x:%02x:%02x:%02x:%02x]... ",
-  //            bda[0], bda[1], bda[2], bda[3], bda[4], bda[5]);
-
-  //   esp_a2d_sink_connect(bda);
-  // }
 }
 
 /* compare two bdas for equality */
