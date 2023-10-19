@@ -1,5 +1,5 @@
-#ifndef __I2S_H__
-#define __I2S_H__
+#ifndef __BT_APP_I2S_H__
+#define __BT_APP_I2S_H__
 
 #include <stdbool.h>
 #include <stdint.h>
@@ -16,6 +16,16 @@ enum {
   RINGBUFFER_MODE_DROPPING /* ringbuffer is not buffering (dropping) incoming
                               audio data, I2S is working */
 };
+
+/**
+ * @brief  enable i2s driver
+ */
+void bt_i2s_driver_install(void);
+
+/**
+ * @brief  disable i2s driver
+ */
+void bt_i2s_driver_uninstall(void);
 
 /**
  * @brief  start up the is task

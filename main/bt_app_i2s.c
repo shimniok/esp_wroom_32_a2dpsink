@@ -93,6 +93,68 @@ static void bt_i2s_task_handler(void *arg) {
  *******************************/
 
 /**
+ * enable I2S driver
+ */
+void bt_i2s_driver_install(void) {
+#ifdef CONFIG_EXAMPLE_A2DP_SINK_OUTPUT_INTERNAL_DAC
+  dac_continuous_config_t cont_cfg = {
+      .chan_mask = DAC_CHANNEL_MASK_ALL,
+      .desc_num = 8,
+      .buf_size = 2048,
+      .freq_hz = 44100,
+      .offset = 127,
+      .clk_src = DAC_DIGI_CLK_SRC_DEFAULT,  // Using APLL as clock source to get
+                                            // a wider frequency range
+      .chan_mode = DAC_CHANNEL_MODE_ALTER,
+  };
+  /* Allocate continuous channels */
+  ESP_ERROR_CHECK(dac_continuous_new_channels(&cont_cfg, &tx_chan));
+  /* Enable the continuous channels */
+  ESP_ERROR_CHECK(dac_continuous_enable(tx_chan));
+#else
+  i2s_chan_config_t chan_cfg =
+      I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_0, I2S_ROLE_MASTER);
+  chan_cfg.auto_clear = true;
+  i2s_std_config_t std_cfg = {
+      .clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(44100),
+      .slot_cfg = I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT,
+                                                  I2S_SLOT_MODE_STEREO),
+      .gpio_cfg =
+          {
+              .mclk = I2S_GPIO_UNUSED,
+              .bclk = CONFIG_EXAMPLE_I2S_BCK_PIN,
+              .ws = CONFIG_EXAMPLE_I2S_LRCK_PIN,
+              .dout = CONFIG_EXAMPLE_I2S_DATA_PIN,
+              .din = I2S_GPIO_UNUSED,
+              .invert_flags =
+                  {
+                      .mclk_inv = false,
+                      .bclk_inv = false,
+                      .ws_inv = false,
+                  },
+          },
+  };
+  /* enable I2S */
+  ESP_ERROR_CHECK(i2s_new_channel(&chan_cfg, &tx_chan, NULL));
+  ESP_ERROR_CHECK(i2s_channel_init_std_mode(tx_chan, &std_cfg));
+  ESP_ERROR_CHECK(i2s_channel_enable(tx_chan));
+#endif
+}
+
+/**
+ * disable I2S driver
+ */
+void bt_i2s_driver_uninstall(void) {
+#ifdef CONFIG_EXAMPLE_A2DP_SINK_OUTPUT_INTERNAL_DAC
+  ESP_ERROR_CHECK(dac_continuous_disable(tx_chan));
+  ESP_ERROR_CHECK(dac_continuous_del_channels(tx_chan));
+#else
+  ESP_ERROR_CHECK(i2s_channel_disable(tx_chan));
+  ESP_ERROR_CHECK(i2s_del_channel(tx_chan));
+#endif
+}
+
+/**
  * I2S task start up
  */
 void bt_i2s_task_start_up(void) {
