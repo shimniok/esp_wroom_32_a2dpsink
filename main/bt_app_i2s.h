@@ -18,6 +18,11 @@ enum {
 };
 
 /**
+ * @brief  config i2s
+ */
+void bt_i2s_config(int sample_rate, int ch_count);
+
+/**
  * @brief  enable i2s driver
  */
 void bt_i2s_driver_install(void);

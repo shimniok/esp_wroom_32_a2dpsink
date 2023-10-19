@@ -24,12 +24,6 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#ifdef CONFIG_EXAMPLE_A2DP_SINK_OUTPUT_INTERNAL_DAC
-#include "driver/dac_continuous.h"
-#else
-#include "driver/i2s_std.h"
-#endif
-
 #include "sys/lock.h"
 
 /* AVRCP used transaction labels */
@@ -97,11 +91,6 @@ static _lock_t s_volume_lock;
 static uint8_t s_volume = 0; /* local volume value */
 static bool s_volume_notify; /* notify volume change or not */
 static bool s_play_notify;
-#ifndef CONFIG_EXAMPLE_A2DP_SINK_OUTPUT_INTERNAL_DAC
-i2s_chan_handle_t tx_chan = NULL;
-#else
-dac_continuous_handle_t tx_chan;
-#endif
 
 /********************************
  * STATIC FUNCTION DEFINITIONS
@@ -292,35 +281,9 @@ static void bt_av_hdl_a2d_evt(uint16_t event, void *p_param) {
         if (oct0 & (0x01 << 3)) {
           ch_count = 1;
         }
-#ifdef CONFIG_EXAMPLE_A2DP_SINK_OUTPUT_INTERNAL_DAC
-        dac_continuous_disable(tx_chan);
-        dac_continuous_del_channels(tx_chan);
-        dac_continuous_config_t cont_cfg = {
-            .chan_mask = DAC_CHANNEL_MASK_ALL,
-            .desc_num = 8,
-            .buf_size = 2048,
-            .freq_hz = sample_rate,
-            .offset = 127,
-            .clk_src =
-                DAC_DIGI_CLK_SRC_DEFAULT,  // Using APLL as clock source to
-                                           // get a wider frequency range
-            .chan_mode = (ch_count == 1) ? DAC_CHANNEL_MODE_SIMUL
-                                         : DAC_CHANNEL_MODE_ALTER,
-        };
-        /* Allocate continuous channels */
-        dac_continuous_new_channels(&cont_cfg, &tx_chan);
-        /* Enable the continuous channels */
-        dac_continuous_enable(tx_chan);
-#else
-        i2s_channel_disable(tx_chan);
-        i2s_std_clk_config_t clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(sample_rate);
-        i2s_std_slot_config_t slot_cfg =
-            I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, ch_count);
-        slot_cfg.bit_shift = true;  // required for PCM5102 I2S format
-        i2s_channel_reconfig_std_clock(tx_chan, &clk_cfg);
-        i2s_channel_reconfig_std_slot(tx_chan, &slot_cfg);
-        i2s_channel_enable(tx_chan);
-#endif
+        bt_i2s_config(sample_rate, ch_count);
+
+        // #endif
         ESP_LOGI(BT_AV_TAG, "Configure audio player: %x-%x-%x-%x",
                  a2d->audio_cfg.mcc.cie.sbc[0], a2d->audio_cfg.mcc.cie.sbc[1],
                  a2d->audio_cfg.mcc.cie.sbc[2], a2d->audio_cfg.mcc.cie.sbc[3]);

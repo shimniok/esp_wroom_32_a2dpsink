@@ -1,19 +1,10 @@
 #include "bt_app_i2s.h"
 
-#include "driver/i2s_std.h"
-#ifdef CONFIG_EXAMPLE_A2DP_SINK_OUTPUT_INTERNAL_DAC
-#include "driver/dac_continuous.h"
-#else
-#include "driver/i2s_std.h"
-#endif
-// #include "freertos/FreeRTOS.h"
-// #include "freertos/FreeRTOSConfig.h"
-// #include "freertos/queue.h"
-#include "esp_log.h"
-#include "freertos/ringbuf.h"
-#include "freertos/semphr.h"
-#include "freertos/task.h"
-// #include "freertos/xtensa_api.h"
+#include <driver/i2s_std.h>
+#include <esp_log.h>
+#include <freertos/ringbuf.h>
+#include <freertos/semphr.h>
+#include <freertos/task.h>
 
 #define RINGBUF_HIGHEST_WATER_LEVEL (32 * 1024)
 #define RINGBUF_PREFETCH_WATER_LEVEL (20 * 1024)
@@ -25,20 +16,12 @@ static RingbufHandle_t s_ringbuf_i2s = NULL; /* handle of ringbuffer for I2S */
 static TaskHandle_t s_bt_i2s_task_handle = NULL; /* handle of I2S task */
 static SemaphoreHandle_t s_i2s_write_semaphore = NULL;
 static uint16_t ringbuffer_mode = RINGBUFFER_MODE_PROCESSING;
+i2s_chan_handle_t tx_chan = NULL;
 
 /*******************************
  * STATIC FUNCTION DECLARATIONS
  ******************************/
 static void bt_i2s_task_handler(void *arg);
-
-/*********************************
- * EXTERNAL FUNCTION DECLARATIONS
- ********************************/
-#ifndef CONFIG_EXAMPLE_A2DP_SINK_OUTPUT_INTERNAL_DAC
-extern i2s_chan_handle_t tx_chan;
-#else
-extern dac_continuous_handle_t tx_chan;
-#endif
 
 /*******************************
  * FUNCTION DEFINITIONS
@@ -93,25 +76,23 @@ static void bt_i2s_task_handler(void *arg) {
  *******************************/
 
 /**
+ * i2s config
+ */
+void bt_i2s_config(int sample_rate, int ch_count) {
+  i2s_channel_disable(tx_chan);
+  i2s_std_clk_config_t clk_cfg = I2S_STD_CLK_DEFAULT_CONFIG(sample_rate);
+  i2s_std_slot_config_t slot_cfg =
+      I2S_STD_MSB_SLOT_DEFAULT_CONFIG(I2S_DATA_BIT_WIDTH_16BIT, ch_count);
+  slot_cfg.bit_shift = true;  // required for PCM5102 I2S format
+  i2s_channel_reconfig_std_clock(tx_chan, &clk_cfg);
+  i2s_channel_reconfig_std_slot(tx_chan, &slot_cfg);
+  i2s_channel_enable(tx_chan);
+}
+
+/**
  * enable I2S driver
  */
 void bt_i2s_driver_install(void) {
-#ifdef CONFIG_EXAMPLE_A2DP_SINK_OUTPUT_INTERNAL_DAC
-  dac_continuous_config_t cont_cfg = {
-      .chan_mask = DAC_CHANNEL_MASK_ALL,
-      .desc_num = 8,
-      .buf_size = 2048,
-      .freq_hz = 44100,
-      .offset = 127,
-      .clk_src = DAC_DIGI_CLK_SRC_DEFAULT,  // Using APLL as clock source to get
-                                            // a wider frequency range
-      .chan_mode = DAC_CHANNEL_MODE_ALTER,
-  };
-  /* Allocate continuous channels */
-  ESP_ERROR_CHECK(dac_continuous_new_channels(&cont_cfg, &tx_chan));
-  /* Enable the continuous channels */
-  ESP_ERROR_CHECK(dac_continuous_enable(tx_chan));
-#else
   i2s_chan_config_t chan_cfg =
       I2S_CHANNEL_DEFAULT_CONFIG(I2S_NUM_0, I2S_ROLE_MASTER);
   chan_cfg.auto_clear = true;
@@ -138,7 +119,6 @@ void bt_i2s_driver_install(void) {
   ESP_ERROR_CHECK(i2s_new_channel(&chan_cfg, &tx_chan, NULL));
   ESP_ERROR_CHECK(i2s_channel_init_std_mode(tx_chan, &std_cfg));
   ESP_ERROR_CHECK(i2s_channel_enable(tx_chan));
-#endif
 }
 
 /**
