@@ -12,7 +12,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-// #include "bt_app_autoconnect.h"
+#include "bt_app_bda.h"
 #include "bt_app_core.h"
 #include "bt_app_i2s.h"
 #include "bt_app_led.h"
@@ -24,7 +24,6 @@
 #include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
-#include "nvs.h"
 #ifdef CONFIG_EXAMPLE_A2DP_SINK_OUTPUT_INTERNAL_DAC
 #include "driver/dac_continuous.h"
 #else
@@ -42,12 +41,6 @@
 
 /* Application layer causes delay value */
 #define APP_DELAY_VALUE 50  // 5ms
-
-/* Application NVS storage of paired BDA */
-#define BT_APP_PART "nvs"
-#define BT_APP_NS "bt_app_bda"
-#define BT_APP_BDA_KEY "bda"
-#define BT_APP_BDA_LEN 6
 
 /*******************************
  * STATIC FUNCTION DECLARATIONS
@@ -683,63 +676,5 @@ void bt_app_rc_tg_cb(esp_avrc_tg_cb_event_t event,
     default:
       ESP_LOGE(BT_RC_TG_TAG, "Invalid AVRC event: %d", event);
       break;
-  }
-}
-
-/* compare two bdas for equality */
-bool bda_equal(uint8_t *bda1, uint8_t *bda2) {
-  uint8_t match = 0;
-  for (int i = 0; i < BT_APP_BDA_LEN; i++) {
-    if (bda1[i] == bda2[i]) {
-      match++;
-    }
-  }
-  return match == BT_APP_BDA_LEN;
-}
-
-/* read saved bda */
-bool nvs_read_bda(uint8_t *bda) {
-  nvs_handle_t my_handle;
-  esp_err_t err;
-  size_t len;
-  bool found = false;
-
-  err = nvs_open(BT_APP_NS, NVS_READONLY, &my_handle);
-  if (err != ESP_OK) {
-    ESP_LOGE(BT_AV_TAG, "Cannot open NVS to read %s\n", BT_APP_NS);
-  } else {
-    err = nvs_get_blob(my_handle, BT_APP_BDA_KEY, (void *)bda, &len);
-    if (err == ESP_OK && len == BT_APP_BDA_LEN) {
-      found = true;
-    }
-    nvs_close(my_handle);
-  }
-
-  return found;
-}
-
-/* update saved bda if necessary */
-void nvs_update_bda(uint8_t *bda) {
-  nvs_handle_t my_handle;
-  esp_err_t err;
-  uint8_t saved_bda[BT_APP_BDA_LEN];
-
-  if (bda == NULL) return;
-
-  /* only save if the supplied bda is different from the saved one */
-  nvs_read_bda(saved_bda);
-  if (!bda_equal(bda, saved_bda)) {
-    err = nvs_open(BT_APP_NS, NVS_READWRITE, &my_handle);
-    if (err != ESP_OK) {
-      ESP_LOGE(BT_AV_TAG, "Cannot open NVS to write %s\n", BT_APP_NS);
-    } else {
-      err =
-          nvs_set_blob(my_handle, BT_APP_BDA_KEY, (void *)bda, BT_APP_BDA_LEN);
-      if (err != ESP_OK) {
-        ESP_LOGE(BT_AV_TAG, "Error writing BDA: %d\n", err);
-      }
-      ESP_LOGI(BT_AV_TAG, "New bda written");
-      nvs_close(my_handle);
-    }
   }
 }

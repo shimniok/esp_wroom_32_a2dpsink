@@ -17,6 +17,9 @@
     "semphr.h": "c",
     "xtensa_api.h": "c",
     "freertosconfig.h": "c",
-    "nvs.h": "c"
+    "nvs.h": "c",
+    "stdbool.h": "c",
+    "inttypes.h": "c",
+    "freertos.h": "c"
   }
 }
