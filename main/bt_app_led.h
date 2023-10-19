@@ -1,5 +1,5 @@
-#ifndef __UI_DISPLAY_H__
-#define __UI_DISPLAY_H__
+#ifndef __BT_APP_LED__
+#define __BT_APP_LED__
 
 #include <stdint.h>
 

@@ -12,6 +12,7 @@
 
 #include "bt_app_av.h"
 #include "bt_app_core.h"
+#include "bt_app_led.h"
 #include "esp_a2dp_api.h"
 #include "esp_avrc_api.h"
 #include "esp_bt.h"
@@ -24,7 +25,6 @@
 #include "freertos/task.h"
 #include "nvs.h"
 #include "nvs_flash.h"
-#include "ui_display.h"
 
 /* device name */
 #define LOCAL_DEVICE_NAME "ESP_SPEAKER"
