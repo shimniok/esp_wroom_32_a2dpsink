@@ -28,8 +28,6 @@
 
 /* device name */
 #define LOCAL_DEVICE_NAME "ESP_SPEAKER"
-#define BT_CFG_NS "bt_config.conf"
-#define BT_CFG_KEY "bt_cfg_key0"
 
 /* event for stack up */
 enum {
