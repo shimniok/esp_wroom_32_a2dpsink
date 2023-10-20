@@ -1,43 +1,38 @@
 menu "A2DP Example Configuration"
 
-    choice EXAMPLE_A2DP_SINK_OUTPUT
-        prompt "A2DP Sink Output"
-        default EXAMPLE_A2DP_SINK_OUTPUT_EXTERNAL_I2S
+    config EXAMPLE_LM1972_LD_PIN
+        int "LM1972 LD GPIO"
+        default 5
         help
-            Select to use Internal DAC or external I2S driver
+            GPIO number to use for LM1972 driver.
 
-        config EXAMPLE_A2DP_SINK_OUTPUT_INTERNAL_DAC
-            bool "Internal DAC"
-            help
-                Select this to use Internal DAC sink output,
-                note that DAC_DMA_AUTO_16BIT_ALIGN should be turned off
-                because the audio data are already 16-bit width
+    config EXAMPLE_LM1972_DIN_PIN
+        int "LM1972 DIN GPIO"
+        default 18
+        help
+            GPIO number to use for LM1972 driver.
 
-        config EXAMPLE_A2DP_SINK_OUTPUT_EXTERNAL_I2S
-            bool "External I2S Codec"
-            help
-                Select this to use External I2S sink output
-
-    endchoice
+    config EXAMPLE_LM1972_CLK_PIN
+        int "LM1972 CLK GPIO"
+        default 19
+        help
+            GPIO number to use for LM1972 driver.
 
     config EXAMPLE_I2S_LRCK_PIN
         int "I2S LRCK (WS) GPIO"
         default 22
-        depends on EXAMPLE_A2DP_SINK_OUTPUT_EXTERNAL_I2S
         help
             GPIO number to use for I2S LRCK(WS) Driver.
 
     config EXAMPLE_I2S_BCK_PIN
         int "I2S BCK GPIO"
         default 26
-        depends on EXAMPLE_A2DP_SINK_OUTPUT_EXTERNAL_I2S
         help
             GPIO number to use for I2S BCK Driver.
 
     config EXAMPLE_I2S_DATA_PIN
         int "I2S DATA GPIO"
         default 25
-        depends on EXAMPLE_A2DP_SINK_OUTPUT_EXTERNAL_I2S
         help
             GPIO number to use for I2S Data Driver.
 
