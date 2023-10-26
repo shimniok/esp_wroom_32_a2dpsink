@@ -63,12 +63,6 @@ static void bt_av_hdl_a2d_evt(uint16_t event, void *p_param);
 static void bt_av_hdl_avrc_ct_evt(uint16_t event, void *p_param);
 /* avrc target event handler */
 static void bt_av_hdl_avrc_tg_evt(uint16_t event, void *p_param);
-/* compare two bdas for equality */
-bool bda_equal(uint8_t *bda1, uint8_t *bda2);
-/* read bda from nvs */
-bool nvs_read_bda(uint8_t *bda);
-/* write bda to nvs */
-void nvs_update_bda(uint8_t *bda);
 
 /*******************************
  * STATIC VARIABLE DEFINITIONS
@@ -114,7 +108,8 @@ static void bt_app_alloc_meta_buffer(esp_avrc_ct_cb_param_t *param) {
 static void bt_av_new_track(void) {
   /* request metadata */
   uint8_t attr_mask = ESP_AVRC_MD_ATTR_TITLE | ESP_AVRC_MD_ATTR_ARTIST |
-                      ESP_AVRC_MD_ATTR_ALBUM | ESP_AVRC_MD_ATTR_GENRE;
+                      ESP_AVRC_MD_ATTR_ALBUM | ESP_AVRC_MD_ATTR_GENRE |
+                      ESP_AVRC_MD_ATTR_PLAYING_TIME;
   esp_avrc_ct_send_metadata_cmd(APP_RC_CT_TL_GET_META_DATA, attr_mask);
 
   /* register notification if peer (controller) supports the event_id */
