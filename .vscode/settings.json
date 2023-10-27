@@ -20,6 +20,7 @@
     "nvs.h": "c",
     "stdbool.h": "c",
     "inttypes.h": "c",
-    "freertos.h": "c"
+    "freertos.h": "c",
+    "random": "c"
   }
 }
