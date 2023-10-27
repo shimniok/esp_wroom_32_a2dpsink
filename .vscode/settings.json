@@ -21,6 +21,9 @@
     "stdbool.h": "c",
     "inttypes.h": "c",
     "freertos.h": "c",
-    "random": "c"
+    "random": "c",
+    "queue.h": "c",
+    "stdint.h": "c",
+    "bt_app_gap.h": "c"
   }
 }
