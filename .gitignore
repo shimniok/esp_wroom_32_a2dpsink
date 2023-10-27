@@ -7,3 +7,8 @@ bt_config.cfg
 *.png
 *.m
 LogPotentiometer.ods
+.cproject
+.project
+paths.xml
+.settings/org.eclipse.cdt.codan.core.prefs
+.settings/org.eclipse.cdt.core.prefs
