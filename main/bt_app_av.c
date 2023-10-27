@@ -16,8 +16,6 @@
 #include "bt_app_core.h"
 #include "bt_app_display.h"
 #include "bt_app_i2s.h"
-#include "esp_a2dp_api.h"
-#include "esp_avrc_api.h"
 #include "esp_bt_device.h"
 #include "esp_bt_main.h"
 #include "esp_gap_bt_api.h"
