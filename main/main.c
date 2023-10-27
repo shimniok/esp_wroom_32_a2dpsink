@@ -12,7 +12,7 @@
 
 #include "bt_app_av.h"
 #include "bt_app_core.h"
-#include "bt_app_led.h"
+#include "bt_app_display.h"
 #include "bt_app_stack.h"
 #include "esp_bt.h"
 #include "esp_bt_main.h"

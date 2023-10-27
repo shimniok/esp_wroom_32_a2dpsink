@@ -2,8 +2,8 @@
 
 #include "bt_app_av.h"
 #include "bt_app_core.h"
+#include "bt_app_display.h"
 #include "bt_app_gap.h"
-#include "bt_app_led.h"
 #include "bt_app_stack.h"
 #include "esp_a2dp_api.h"
 #include "esp_avrc_api.h"
