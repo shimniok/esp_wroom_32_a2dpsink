@@ -1,4 +1,5 @@
-idf_component_register(SRCS "bt_app_av.c"
+idf_component_register(SRCS "bt_app_autoconnect.c" 
+                            "bt_app_av.c"
                             "bt_app_bda.c"
                             "bt_app_gap.c"
                             "bt_app_core.c"
